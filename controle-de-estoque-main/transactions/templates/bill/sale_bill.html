@@ -1,0 +1,120 @@
+{% extends bill_base %}
+{% load static %}
+
+
+{% block title %} Número da fatura de venda: : {{ bill.billno }}{% endblock title %}
+
+
+{% block content %}
+    
+    <div style="color:#969696; font-style: bold; font-size: 3rem;  border-bottom: 1px solid white;">Número da fatura de venda: : {{ bill.billno }}</div>
+
+    <br><br>
+
+    <form method="post">
+    {% csrf_token %}
+
+        <div class="bg">
+
+            <br><br>
+
+            <div id="printArea" class="bg">
+
+                <table class="outer-box inner-box" style="width: 800px; margin-left: auto; margin-right: auto;">
+                    <tbody>
+                    
+                        <tr style="height: 1px;">
+                            <td> <p style="text-align: center;">NOTA FISCAL - VENDA</p> </td>
+                        </tr>
+                    
+                        <tr style="text-align: center;">
+                            <td >
+                                <span style="font-size: 350%;">Adega XYZ</span> <br>
+                                <span style="text-decoration: underline; font-weight: bold;">Endereço:</span> Avenida Paulista, 1234 <br>São Paulo, SP, Brasil                                <br>
+                                <span style="text-decoration: underline; font-weight: bold;">Email: adegaxyz@gmail.com</span> <br><br>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                            <table class="outer-box" style="width: 800px; margin-left: auto; margin-right: auto;">
+                                <tbody>
+                                    <tr>
+                                        <td class="inner-box" style="text-align: center; font-weight: bold;" colspan="3">CNPJ - XX.XXX.XXX/0001-XX</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="inner-box" style="width: 40%; font-weight: bold;">&nbsp;COMPRADOR</td>
+                                        <td class="inner-box" style="width: 30%; font-weight: bold;">&nbsp;# FATURA</td>
+                                        <td class="inner-box" style="width: 30%;">&nbsp;{{ bill.billno }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="inner-box" style="width: 40%;">&nbsp;{{ bill.name }}</td>
+                                        <td class="inner-box" style="width: 30%; font-weight: bold;">&nbsp;DATA</td>
+                                        <td class="inner-box" style="width: 30%;">&nbsp;{{ bill.time.date }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="inner-box" style="width: 100%;" rowspan="3">{{ bill.address|linebreaks }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="inner-box" style="font-weight: bold;">&nbsp;CPF / CNPJ : {{ bill.supplier.cnpj }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                            <table class="outer-box" style="width: auto; margin-left: auto; margin-right: auto;">
+                                <tbody>
+                                    <tr>
+                                        <td class="inner-box" style="width: 05%; font-weight: bold; text-align: center;">&nbsp;ID</td>
+                                        <td class="inner-box" style="width: 42=7%; font-weight: bold; text-align: center;">ITEM</td>
+                                        <td class="inner-box" style="width: 12%; font-weight: bold; text-align: center;">QTD</td>
+                                        <td class="inner-box" style="width: 12%; font-weight: bold; text-align: center;">VALOR</td>
+                                        <td class="inner-box" style="width: 12%; font-weight: bold; text-align: center;">TOTAL</td>
+                                    </tr>
+                                    {% for item in items %}
+                                        <tr style="height: auto;">
+                                            <td class="inner-box" style="width: 5%;">&nbsp; {{ forloop.counter }}</td>
+                                            <td class="inner-box" style="width: 47%;">&nbsp; {{ item.stock.name }}</td>
+                                            <td class="inner-box" style="width: 12%;">&nbsp; {{ item.quantity }}</td>
+                                            <td class="inner-box" style="width: 12%;">&nbsp; {{ item.perprice }}</td>
+                                            <td class="inner-box" style="width: 12%;">&nbsp;{{ item.totalprice }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            <br><br>
+
+        </div>
+
+        <br><br>
+
+        <div class="wrapper">
+            <button class="center ghost-button" onclick="printpage('printArea')">Imprimir</button>
+            <button class="center ghost-green" type="submit">Salvar rascunho</button>
+            <a href="{% url 'sales-list' %}" class="btn center ghost-button">Voltar</a>
+        </div>
+    
+    </form>
+    
+    <script>
+        function printpage(divName) {
+            var printContents = document.getElementById(divName).innerHTML;
+            var originalContents = document.body.innerHTML;
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+        }       
+        </script>
+
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+  Perfil de {{ supplier.name }}
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="content-section">
+        <div class="media">
+            <div class="media-body">
+                <h2 style="color:#969696;" class="account-heading">&nbsp;{{ supplier.name }}</h2>
+                <a href="{% url 'edit-supplier' supplier.pk %}" class="btn ghost-button" style="float: right;">Editar informações</a>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="fal">
+                            Telefone de contato &nbsp; : {{ supplier.phone }} <br>
+                            Email &nbsp;&nbsp;&nbsp;&nbsp; : {{ supplier.email }} <br>
+                            CPF / CNPJ &nbsp; : {{ supplier.cnpj }} <br>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="fal">
+                            Endereço: <br> {{ supplier.address|linebreaks }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-css">
+        
+        <br>
+        
+        <thead class="thead-inverse align-middle">
+            <tr>
+                <th width="10%">Número da fatura</th>
+                <th width="15%">Item</th>
+                <th width="15%">Quantidade</th>
+                <th width="15%">Preço total</th>
+                <th width="15%">Data de compra</th>
+                <th width="30%">Opções</th>
+            </tr>
+        </thead>
+      
+        <tbody>
+            {% for purchase in bills %}
+            <tr>
+                <td class="align-middle"> <h3>{{ purchase.billno }}</h3> </td>
+                <td class="align-middle">{% for item in purchase.get_items_list %} {{ item.stock.name }} <br> {% endfor %}</td>
+                <td class="align-middle">{% for item in purchase.get_items_list %} {{ item.quantity }} <br> {% endfor %}</td>     
+                <td class="align-middle">{{ purchase.get_total_price }}</td>
+                <td class="align-middle">{{ purchase.time.date }}</td>
+                <td class="align-middle"> <a href="{% url 'purchase-bill' purchase.billno %}" class="btn ghost-pink">View Bill</a> <a href="{% url 'delete-purchase' purchase.pk %}" class="btn ghost-red">Delete Bill</a> </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+    <div class="align-middle">
+        {% if bills.has_other_pages %}
+
+            {% if bills.has_previous %}
+                <a class="btn btn-outline-info mb-4" href="?page=1">Primeira</a>
+                <a class="btn btn-outline-info mb-4" href="?page={{ bills.previous_page_number }}">Anterior</a>
+            {% endif %}
+
+            {% for num in bills.paginator.page_range %}
+                {% if bills.number == num %}
+                    <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                {% elif num > bills.number|add:'-3' and num < bills.number|add:'3' %}
+                    <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if bills.has_next %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ bills.next_page_number }}">Próxima</a>
+                <a class="btn btn-outline-info mb-4" href="?page={{ bills.paginator.num_pages }}">Última</a>
+            {% endif %}
+
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock content %}

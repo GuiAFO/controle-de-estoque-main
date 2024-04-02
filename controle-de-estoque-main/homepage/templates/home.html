@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+
+{% block title %} Início {% endblock title %}
+
+
+{% block content %}
+
+    <div style="color:#969696; font-style: bold; font-size: 3rem; border-bottom: 1px solid #fff">Bem vindo, {{ request.user.username }}</div>
+
+    <br>
+
+    <div id="container" style="position: relative; height:45vh; border: 2mm ridge #4a4a4a; border-radius: 30px;" class="align-middle table-bordered">
+        <canvas id="bar-graph"></canvas>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-md-6">
+            <a href="{% url 'select-supplier' %}" class="btn ghost-button btn-lg btn-block btn-huge">Nova entrada de estoque</a>
+        </div>
+        <div class="col-md-6">
+            <a href="{% url 'new-sale' %}" class="btn ghost-button btn-lg btn-block btn-huge">Nova saída de estoque</a>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="content-section">
+        <div class="row">
+
+            <div class="col-md-6">
+                <div style="color:#969696; font-style: bold; font-size: 1.3em; border-bottom: 2px solid #fff">Vendas recentes</div><br>
+                {% for item in sales %}
+                    {% if not forloop.first %}
+                        <br><div style="border-bottom: 0.5px solid #fff"></div><br>
+                    {% endif %}
+                    <div class="row">               
+                        <div class="col-md-9"> 
+                            Número da fatura: {{ item.billno }} <br> 
+                            Comprado por {{ item.name }} <br>
+                            <small>{{ item.time.date }}</small>
+                        </div>
+                        <div class="col-md-2"> {{ item.get_total_price }} <br> <br> <a href="{% url 'sale-bill' item.billno %}">Ver fatura</a> </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="col-md-6">
+                <div style="color:#969696; font-style: bold; font-size: 1.3em; border-bottom: 2px solid #fff">Compras recentes</div><br>
+                {% for item in purchases %}
+                    {% if not forloop.first %}
+                        <br><div style="border-bottom: 0.5px solid #fff"></div><br>
+                    {% endif %}
+                    <div class="row">               
+                        <div class="col-md-9"> 
+                            Número da fatura: {{ item.billno }} <br> 
+                            Comprado por {{ item.supplier.name }} <br>
+                            <small>{{ item.time.date }}</small>
+                        </div>
+                        <div class="col-md-2"> {{ item.get_total_price }} <br> <br> <a href="{% url 'purchase-bill' item.billno %}">Ver fatura</a> </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+
+    <script src="{% static 'js/Chart.min.js' %}"></script>  
+    <script>
+        Chart.defaults.global.defaultFontColor = '#fff';
+        var barConfig = {
+            type: 'bar',
+            data: {
+                datasets: [{
+                    backgroundColor: '#969696',
+                    label: 'Stock in Inventory',
+                    data: {{ data|safe }},
+                }],
+                labels: {{ labels|safe }}
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            },
+        };
+
+        window.onload = function() {
+            var ctx = document.getElementById('bar-graph').getContext('2d');
+            window.BarStock = new Chart(ctx, barConfig);
+        };
+
+    </script>
+
+{% endblock content %}

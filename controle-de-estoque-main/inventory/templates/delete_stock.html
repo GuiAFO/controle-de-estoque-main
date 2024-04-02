@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+
+{% block title %} Deletar estoque {% endblock title %}
+
+
+{% block content %}
+                
+    <form method="post">
+        
+        {% csrf_token %}
+        
+        <fieldset class="form-group">
+            <div style="color:#969696; font-style: bold; font-size: 3rem; border-bottom: 1px solid white;">Deletar estoque</div> <br>
+            <h2>Tem certeza de que deseja deletar o item "{{ object.name }}"?</h2>
+        </fieldset>
+
+        <div class="form-group">  
+            <button type="submit" class="btn ghost-red">Sim, deletar</button>
+            <a href="{% url 'inventory' %}" class="btn ghost-button">Cancelar</a>
+        </div>
+        
+    </form>
+
+{% endblock content %}
